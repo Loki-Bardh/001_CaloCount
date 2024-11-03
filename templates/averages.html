@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Averages
+{% endblock %}
+
+{% block main %}
+
+<div>
+    <h1>Averages per Day</h1>
+    <br>
+    <div id="monthToggles" class="horizontal-form">
+        <button onclick="loadPeriod('today')">Today</button>
+        <button onclick="loadPeriod('last_week')">Last 7 Days</button>
+        <button onclick="loadPeriod('this_month')">This Month</button>
+        <button onclick="loadPeriod('3_months')">Last 3 Months</button>
+        <button onclick="loadPeriod('6_months')">Last 6 Months</button>
+        <button onclick="loadPeriod('12_months')">Last 12 Months</button>
+    </div>
+    <br>
+    <div class="circle-container">
+        <div class="circle">
+            <div class="static-text">AVG Serving</div>
+            <div class="dynamic-value" id="totalServings">0</div>
+            <div class="static-text">g</div>
+        </div>
+        <div>
+            <br><h2 id="daysIndicator">Days Logged<br><span id="daysCount">0</span></h2>
+        </div>
+        <div class="circle">
+            <div class="static-text">AVG Calories</div>
+            <div class="dynamic-value" id="totalCalories">0</div>
+            <div class="static-text">kcal</div>
+        </div>
+    </div>
+    <div class="circle-container">
+        <div class="circle">
+            <div class="static-text">AVG Fat</div>
+            <div class="dynamic-value" id="totalFat">0</div>
+            <div class="static-text">g</div>
+        </div>
+        <div class="circle">
+            <div class="static-text">AVG Protein</div>
+            <div class="dynamic-value" id="totalProtein">0</div>
+            <div class="static-text">g</div>
+        </div>
+        <div class="circle">
+            <div class="static-text">AVG Carbs</div>
+            <div class="dynamic-value" id="totalCarbs">0</div>
+            <div class="static-text">g</div>
+        </div>
+        <div class="circle">
+            <div class="static-text">AVG Sugar</div>
+            <div class="dynamic-value" id="totalSugar">0</div>
+            <div class="static-text">g</div>
+        </div>
+        <div class="circle">
+            <div class="static-text">AVG Salt</div>
+            <div class="dynamic-value" id="totalSalt">0</div>
+            <div class="static-text">mg</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadPeriod(period) {
+        console.log(`Selected period: ${period}`);
+
+        // Highlight selected button
+        document.querySelectorAll('#monthToggles button').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`button[onclick="loadPeriod('${period}')"]`).classList.add('active');
+
+        let url = `/averages?period=${period}`;
+
+        console.log(`Fetching URL: ${url}`);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Data received:', data);
+                document.getElementById('daysCount').innerText = data.active_days || 0;
+                updateCircles(data.averages);
+            })
+            .catch(error => console.error('Error fetching values:', error));
+    }
+
+    function updateCircles(averages) {
+        // Update circle values with the data received
+        document.getElementById('totalServings').innerText = averages.total_serving || 0;
+        document.getElementById('totalCalories').innerText = averages.total_calories || 0;
+        document.getElementById('totalFat').innerText = averages.total_fat || 0;
+        document.getElementById('totalProtein').innerText = averages.total_protein || 0;
+        document.getElementById('totalCarbs').innerText = averages.total_carbs || 0;
+        document.getElementById('totalSugar').innerText = averages.total_sugar || 0;
+        document.getElementById('totalSalt').innerText = averages.total_salt || 0;
+    }
+</script>
+
+{% endblock %}

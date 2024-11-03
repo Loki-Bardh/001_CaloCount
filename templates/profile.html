@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block main %}
+
+<h1>Welcome Back!</h1>
+
+<div id="lastMeal"></div>
+    {% if last_meal %}
+        <h3>
+            The last meal you logged was<br>
+            <b>{{ last_meal.meal_type }}</b> on <b>{{ last_meal.date }}</b><br>
+            for a total of <b>{{ last_meal.total_calories }}</b> kcal!
+        </h3>
+    {% else %}
+        <p><H3>No meals logged yet</H3></p>
+    {% endif %}
+</div>
+<div  id="todayAverage">
+    <div class="circle-container">
+        <div class="circle">
+            <div class="static-text">Serving</div>
+            <div class="dynamic-value" id="totalServing">{{ day_total.total_serving | default(0) | int }}</div>
+            <div class="static-text">g</div>
+        </div>
+        <h2>Today's Stats<br>at a glance</h2>
+        <div class="circle">
+            <div class="static-text">Calories</div>
+            <div class="dynamic-value" id="totalCalories">{{ day_total.total_calories | default(0) | int }}</div>
+            <div class="static-text">kCal</div>
+        </div>
+    </div>
+    <div class="circle-container">
+        <div class="circle">
+            <div class="static-text">Fat</div>
+            <div class="dynamic-value" id="totalFat">{{ day_total.total_fat | default(0) | int }}</div>
+            <div class="static-text">g</div>
+        </div>
+        <div class="circle">
+            <div class="static-text">Protein</div>
+            <div class="dynamic-value" id="totalProtein">{{ day_total.total_protein | default(0) | int }}</div>
+            <div class="static-text">g</div>
+        </div>
+        <div class="circle">
+            <div class="static-text">Carbs</div>
+            <div class="dynamic-value" id="totalCarbs">{{ day_total.total_carbs | default(0) | int }}</div>
+            <div class="static-text">g</div>
+        </div>
+        <div class="circle">
+            <div class="static-text">Sugar</div>
+            <div class="dynamic-value" id="totalSugar">{{ day_total.total_sugar | default(0) | int }}</div>
+            <div class="static-text">g</div>
+        </div>
+        <div class="circle">
+            <div class="static-text">Salt</div>
+            <div class="dynamic-value" id="totalSalt">{{ day_total.total_salt | default(0) | int }}</div>
+            <div class="static-text">mg</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        loadPeriod('today');  // Automatically load today's averages when the page loads
+    });
+
+    function loadPeriod(period) {
+        console.log(`Selected period: ${period}`);
+
+        // Highlight selected button
+        document.querySelectorAll('.horizontal-form button').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`button[onclick="loadPeriod('${period}')"]`).classList.add('active');
+
+        let url = `/averages?period=${period}`;
+
+        console.log(`Fetching URL: ${url}`);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Data received:', data);
+                document.getElementById('daysCount').innerText = data.active_days || 0;
+                updateCircles(data.averages);
+            })
+            .catch(error => console.error('Error fetching values:', error));
+    }
+
+    function updateCircles(averages) {
+        // Update circle values with the data received
+        document.getElementById('totalServings').innerText = averages.total_serving || 0;
+        document.getElementById('totalFat').innerText = averages.total_fat || 0;
+        document.getElementById('totalProtein').innerText = averages.total_protein || 0;
+        document.getElementById('totalCarbs').innerText = averages.total_carbs || 0;
+        document.getElementById('totalSugar').innerText = averages.total_sugar || 0;
+        document.getElementById('totalSalt').innerText = averages.total_salt || 0;
+    }
+
+</script>
+{% endblock %}

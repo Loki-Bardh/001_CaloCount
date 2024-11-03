@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+
+<div>
+    <h2>Food Item History</h2>
+    <br>
+    <h4> Click the FDC ID number to link to the USDA website for more detailed values.</h4>
+    <br>
+    <table id="ingredientsHistory">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Meal Type</th>
+                <th>Description</th>
+                <th>Serving Size (g)</th>
+                <th>Calories</th>
+                <th>Fats</th>
+                <th>Proteins</th>
+                <th>Carbohydrates</th>
+                <th>Sugars</th>
+                <th>Salt</th>
+                <th>FDC Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in food_items %}
+            <tr >
+                <td>{{ item.date }}</td>
+                <td>{{ item.meal_type }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.serving_size }}</td>
+                <td>{{ item.calories }}</td>
+                <td>{{ item.fats }}</td>
+                <td>{{ item.proteins }}</td>
+                <td>{{ item.carbohydrates }}</td>
+                <td>{{ item.sugars }}</td>
+                <td>{{ item.salt }}</td>
+                <td><a href="https://fdc.nal.usda.gov/food-details/{{ item.fdcId }}/nutrients" target="_blank">{{ item.fdcId }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

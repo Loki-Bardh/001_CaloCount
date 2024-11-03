@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Averages
+{% endblock %}
+
+{% block main %}
+
+<div>
+    <h3 style="font-variant: small-caps;">Favorite Foods</h3>
+    <form method="POST" action="/favorites">
+        <input type="hidden" name="sort_by" id="sort_by">
+        <div class="dropdown-center">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Sort Items By
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="#" onclick="setSortBy('occurence')">Eaten Most Often</a></li>
+                <li><a class="dropdown-item" href="#" onclick="setSortBy('volume')">Eaten the Most</a></li>
+            </ul>
+        </div>
+    </form>
+    <table id="results"></table>
+</div>
+<div>
+    <table>
+        {% if most_occurence %}
+            <h4>My 5 Most Frequently Eaten!</h4>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Times Eaten</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in most_occurence %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+            </ul>
+        {% elif most_volume %}
+            <h4>My 5 Most Served Up! </h4>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount Eaten</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in most_volume %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.total_volume }} g</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        {% endif %}
+    </table>
+</div>
+
+<script>
+    function setSortBy(value) {
+        document.getElementById('sort_by').value = value;
+        document.querySelector('form').submit();
+    }
+</script>
+
+{% endblock %}

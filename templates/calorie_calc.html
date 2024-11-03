@@ -1,0 +1,215 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Calorie Calculator
+{% endblock %}
+
+{% block main %}
+
+<div>
+    <h2>Try Searching for your Favorite Food</h2>
+    <h3>You can add multiple search words, just separate them with a comma</h3>
+    <form method="POST" action="/calorie_calc">
+        <input autofocus class="form-control mx-auto w-auto" placeholder="Search for food item.." type="text" id="query">
+    </form>
+    <table id="results"></table>
+</div>
+<div>
+    <h3>Just keep selecting ingredients or put in the values for your own meal</h3>
+    <table id="selectedIngredients">
+        <thead>
+            <tr>
+                <th>Food Item</th>
+                <th>Serving Size (g)</th>
+                <th>Calories</th>
+                <th>Fats</th>
+                <th>Proteins</th>
+                <th>Carbohydrates</th>
+                <th>Sugars</th>
+                <th>Salt</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="selectedIngredientsBody">
+            <tr>
+                <td><input type="text" id="userInputItem" class="form-control" placeholder="User input item"></td>
+                <td><input type="number" id="userInputServingSize" class="form-control" value="100" min="1"></td>
+                <td><input type="number" id="userInputCalories" class="form-control" placeholder="kcal"></td>
+                <td><input type="number" id="userInputFats" class="form-control" placeholder="g"></td>
+                <td><input type="number" id="userInputProteins" class="form-control" placeholder="g"></td>
+                <td><input type="number" id="userInputCarbs" class="form-control" placeholder="g"></td>
+                <td><input type="number" id="userInputSugars" class="form-control" placeholder="g"></td>
+                <td><input type="number" id="userInputSalt" class="form-control" placeholder="mg"></td>
+                <td><button id="addUserItemBtn">Add</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<h3>Don't forget to choose a meal time before pressing on SAVE!</h3>
+<div class="form-container">
+    <form method="POST" action="/profile" onsubmit="prepareFormData(event)">
+        <input type="hidden" name="selectedItems" id="selectedItemsInput">
+        <input type="hidden" name="mealType" id="mealTypeInput">
+        <input type="hidden" name="fdcId" id="fdcIdInput">
+        <div class="dropdown-center">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Choose Meal Type
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" onclick="setMealType('Snack')">Snack</a></li>
+                <li><a class="dropdown-item" onclick="setMealType('Breakfast')">Breakfast</a></li>
+                <li><a class="dropdown-item" onclick="setMealType('Lunch')">Lunch</a></li>
+                <li><a class="dropdown-item" onclick="setMealType('Dinner')">Dinner</a></li>
+            </ul>
+        </div>
+        <button id="saveButton" class="btn btn-primary" type="submit" disabled>Save!</button>
+    </form>
+</div>
+
+<script>
+    // Partially written then cycled through ChatGPT and with the help of Ducky to try and get a sleeker version with less repetition and clunkiness
+    // Turns out to be a fairly complex challenge as a beginner
+    let selectedItems = [];
+
+    document.getElementById('query').addEventListener('input', function(event) {
+        const query = this.value;
+        if (query) {
+            fetch(`/calorie_calc?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    console
+                    const resultsTable = document.getElementById('results');
+                    resultsTable.innerHTML = `<tr><th>Description</th><th>Select</th></tr>` +
+                        data.map(item => `
+                            <tr>
+                                <td>${item.description}</td>
+                                <td><input type="checkbox" data-fdcid="${item.fdcId}" onchange="selectItem(this)"></td>
+                            </tr>`).join('');
+                })
+                .catch(error => console.error('Error:', error));  // Catch and log errors
+        }
+    });
+
+    function selectItem(checkbox) {
+        const fdcId = checkbox.dataset.fdcid;
+        fetch(`/calorie_calc?fdcId=${fdcId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);  // Debugging line
+                data.fdcId = fdcId;
+                if (checkbox.checked) {
+                    const row = createIngredientRow(data);
+                    document.getElementById('selectedIngredientsBody').appendChild(row);
+                    selectedItems.push(data);
+                    document.getElementById('fdcIdInput').value = fdcId;
+                } else {
+                    selectedItems = selectedItems.filter(item => item.fdcId !== fdcId);
+                    removeIngredientRow(data);
+                }
+            })
+            .catch(error => console.error('Error:', error));  // Catch and log errors
+    }
+
+    function createIngredientRow(data) {
+        console.log(data);
+        const servingSize = 100;
+        const adjustedValues = calculateNutritionalValues(data, servingSize);
+        const row = document.createElement('tr');
+        row.dataset.fdcId = data.fdcId;
+        row.innerHTML = `
+            <td>${data.description}</td>
+            <td><input type="number" class="form-control" value="${servingSize}" onchange="updateRow(this, '${data.description}', ${data.calories}, ${data.fats}, ${data.proteins}, ${data.carbohydrates}, ${data.sugars}, ${data.salt})"></td>
+            <td>${adjustedValues.calories} kcal</td>
+            <td>${adjustedValues.fats} g</td>
+            <td>${adjustedValues.proteins} g</td>
+            <td>${adjustedValues.carbohydrates} g</td>
+            <td>${adjustedValues.sugars} g</td>
+            <td>${adjustedValues.salt} mg</td>
+            <td><button onclick="removeRow(this)">Remove</button></td>
+        `;
+        return row;
+    }
+
+    function calculateNutritionalValues(data, servingSize) {
+        const calories = parseFloat(data.calories) || 0;
+        const fats = parseFloat(data.fats) || 0;
+        const proteins = parseFloat(data.proteins) || 0;
+        const carbohydrates = parseFloat(data.carbohydrates) || 0;
+        const sugars = parseFloat(data.sugars) || 0;
+        const salt = parseFloat(data.salt) || 0;
+
+        return {
+            calories: Math.trunc(calories * servingSize / 100),
+            fats: (fats * servingSize / 100).toFixed(2),
+            proteins: (proteins * servingSize / 100).toFixed(2),
+            carbohydrates: (carbohydrates * servingSize / 100).toFixed(2),
+            sugars: (sugars * servingSize / 100).toFixed(2),
+            salt: Math.trunc(salt * servingSize / 100)
+        };
+    }
+
+    function updateRow(inputElement, description, calories, fats, proteins, carbohydrates, sugars, salt) {
+        const newServingSize = inputElement.value;
+        const row = inputElement.closest('tr');
+        const newValues = calculateNutritionalValues({ calories, fats, proteins, carbohydrates, sugars, salt }, newServingSize);
+        row.cells[2].innerText = `${newValues.calories} kcal`;
+        row.cells[3].innerText = `${newValues.fats} g`;
+        row.cells[4].innerText = `${newValues.proteins} g`;
+        row.cells[5].innerText = `${newValues.carbohydrates} g`;
+        row.cells[6].innerText = `${newValues.sugars} g`;
+        row.cells[7].innerText = `${newValues.salt} mg`;
+    }
+
+    function removeRow(button) {
+        const row = button.closest('tr');
+        const fdcId = row.dataset.fdcid;
+        selectedItems = selectedItems.filter(item => item.fdcId !== fdcId);
+        row.remove();
+    }
+
+    document.getElementById('addUserItemBtn').addEventListener('click', function(event) {
+        event.preventDefault();
+        const item = document.getElementById('userInputItem').value || 'Unknown Item';
+        const servingSize = document.getElementById('userInputServingSize').value || 100;
+        const values = [
+            'userInputCalories', 'userInputFats', 'userInputProteins',
+            'userInputCarbs', 'userInputSugars', 'userInputSalt'
+        ].map(id => document.getElementById(id).value || 0);
+
+        const row = createIngredientRow({ description: item, ...values });
+        document.getElementById('selectedIngredientsBody').appendChild(row);
+        clearUserInputFields();
+    });
+
+    function clearUserInputFields() {
+        document.getElementById('userInputItem').value = '0';
+        document.querySelectorAll('#userInputServingSize, #userInputCalories, #userInputFats, #userInputProteins, #userInputCarbs, #userInputSugars, #userInputSalt').forEach(input => input.value = '');
+    }
+
+    function setMealType(mealType) {
+        document.getElementById('mealTypeInput').value = mealType;
+        document.querySelector('.dropdown-toggle').innerText = mealType;
+        document.getElementById('saveButton').disabled = false;
+    }
+
+    function prepareFormData(event) {
+        console.log(selectedItemsInput);
+        event.preventDefault(); // Prevent default form submission
+        const selectedItems = Array.from(document.querySelectorAll('#selectedIngredientsBody tr')).slice(1).map(row => ({
+            description: row.cells[0].innerText,
+            servingSize: row.cells[1].querySelector('input').value,
+            calories: row.cells[2].innerText,
+            fats: row.cells[3].innerText,
+            proteins: row.cells[4].innerText,
+            carbohydrates: row.cells[5].innerText,
+            sugars: row.cells[6].innerText,
+            salt: row.cells[7].innerText,
+            fdcId: row.dataset.fdcId
+        }));
+
+        document.getElementById('selectedItemsInput').value = JSON.stringify(selectedItems);
+        event.target.submit(); // Proceed with form submission
+    }
+</script>
+{% endblock %}

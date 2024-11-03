@@ -1,0 +1,251 @@
+/* Size for brand */
+nav .container-fluid {
+    display: flex;
+    justify-content: center; /* Center the items */
+    align-items: center;
+}
+
+.navbar-nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-item {
+    text-decoration: none;
+    text-align: center;
+    border-style: groove;
+    border-radius: 5px;
+    font-size: 100%;
+    color: white;
+    background-color: #3E2A53;
+    font-variant: small-caps;
+    padding: 8px;
+    margin: 0 5px; /* Closer spacing */
+}
+
+table {
+    width: 85%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid;
+    table-layout: fixed;
+}
+
+th, td {
+    border: 1px solid;
+    padding: 4px;
+    white-space: center;
+}
+
+/* Search table */
+#selectedIngredients th:nth-child(1) {
+    width: 34% !important;
+}
+#selectedIngredients th:nth-child(6) {
+    width: 12% !important;
+}
+#selectedIngredients th:nth-child(4),
+#selectedIngredients th:nth-child(8){
+    width: 6% !important;
+}
+#selectedIngredients th:nth-child(9) {
+    width: 8% !important;
+}
+#selectedIngredients th:nth-child(n+2) {
+    width: auto;
+}
+
+/* Food history table */
+#ingredientsHistory th:nth-child(3) {
+    width: 32% !important;
+}
+#ingredientsHistory th:nth-child(8) {
+    width: 10% !important;
+}
+#ingredientsHistory th:nth-child(1),
+#ingredientsHistory th:nth-child(5),
+#ingredientsHistory th:nth-child(7),
+#ingredientsHistory th:nth-child(9),
+#ingredientsHistory th:nth-child(11){
+    width: 7% !important;
+}
+#ingredientsHistory th:nth-child(n+2) {
+    width: auto;
+}
+
+
+input.form-control {
+    width: 100%; /* Make inputs take the full width of the cell */
+    box-sizing: border-box; /* Ensure padding does not affect width */
+
+}
+
+#selectedIngredientsBody td {
+    padding: 0; /* Remove extra padding for better alignment with inputs */
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Adjust the gap as needed */
+    margin-top: 10px;
+}
+
+form {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust the gap as needed */
+    justify-content: center;
+}
+
+.vertical-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px; /* Adjust the gap as needed */
+}
+
+.vertical-form input {
+    text-align: center;
+}
+
+.horizontal-form {
+    display: flex;
+    flex-direction: row;
+    align-items: center !important;
+    justify-content: center;
+    text-align: center;
+    gap: 10px; /* Adjust the gap as needed */
+    margin-top: 15px;
+    margin-bottm: 15px;
+}
+
+h1 {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    font-size: 5em;
+    padding: 10px;
+    text-colour: #3E2A53;
+}
+h2 {
+    font-variant: small-caps;
+    text-align: center;
+    padding: 10px;
+    text-colour: #3E2A53;
+}
+h3 {
+    font-family: Arial, sans-serif;
+    font-variant: small-caps;
+    text-align: center;
+    padding: 10px;
+    text-colour: #3E2A53;
+}
+h4 {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 10px;
+    text-colour: #3E2A53;
+}
+.plain_text {
+    font-family: Arial, sans-serif;
+    font-size: 100%;
+    padding: 10px;
+}
+.center {
+    display: block;
+    margin-top: 2.5em;
+    margin-bottom: 2.5em;
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-variant: small-caps;
+}
+
+div.dropdown-center {
+    text-align: center;
+}
+
+#contact {
+    text-align: center;
+    padding: 5%;
+}
+section {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+body {
+    background-color: #F0E8F8;
+}
+
+.disc {
+    border-radius: 50%;
+    text-align: center;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+    font-weight: bold;
+}
+
+.circle-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px;
+}
+
+.circle {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 8px solid #3E2A53; /* Change the color as needed */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.static-text {
+    font-weight: bold;
+}
+
+.dynamic-value {
+    font-size: 3.8em;
+}
+
+.active {
+    background-color: #3E2A53; /* Highlight color for active month */
+    color: white; /* Text color for active month */
+    font-weight: bold;
+    text-align: center;
+    border-style: groove;
+    border-radius: 5px;
+    font-size: 115%;
+    font-variant: small-caps;
+    padding: 8px;
+    margin: 0 5px;
+}
+
+button {
+    color: black; /* Text color for active month */
+
+    text-align: center;
+    border-style: groove;
+    border-radius: 3px;
+    font-size: 110%;
+    font-variant: small-caps;
+    padding: 8px;
+    margin: 0 5px;
+}
